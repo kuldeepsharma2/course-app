@@ -1,24 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import CourseListingPage from './pages/CourseListingPage';
+import CourseDetailsPage from './pages/CourseDetailsPage';
+import StudentDashboardPage from './pages/StudentDashboardPage';
+import CartPage from './pages/CartPage';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Header from './components/Header';
+import PrivateRoute from './components/PrivateRoute'; // Import PrivateRoute
+import AddCourse from './pages/AddCourse';
+import { CartProvider } from './contexts/CartContext';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <CartProvider>
+      <div className="App">
+        {/* Include Header Component */}
+        <Header />
+
+        {/* Define Routes */}
+        <Routes>
+          <Route path="/" element={<CourseListingPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/addcourse" element={<AddCourse />} />
+          <Route path="/course/:id" element={<CourseDetailsPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          {/* Protect the dashboard with PrivateRoute */}
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <StudentDashboardPage />
+              </PrivateRoute>
+            }
+          />
+        </Routes>
+        </div>
+        </CartProvider>
+    </Router>
   );
 }
 
