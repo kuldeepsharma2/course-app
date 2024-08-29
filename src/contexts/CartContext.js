@@ -3,10 +3,8 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { db } from '../firebase';
 
-// Create a context for the cart
 const CartContext = createContext();
 
-// Provider component for cart context
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const auth = getAuth();
@@ -16,11 +14,9 @@ export const CartProvider = ({ children }) => {
     if (user) {
       const cartRef = doc(db, 'carts', user.uid);
 
-      // Listen for real-time updates to the cart document
       const unsubscribe = onSnapshot(cartRef, (docSnapshot) => {
         const data = docSnapshot.data();
         if (data) {
-          // Filter out any potential empty items
           const cartItems = Object.values(data).filter(item => item && item.id);
           setCart(cartItems);
         } else {
@@ -28,7 +24,6 @@ export const CartProvider = ({ children }) => {
         }
       });
 
-      // Clean up the subscription on unmount
       return () => unsubscribe();
     } else {
       setCart([]);
@@ -42,5 +37,4 @@ export const CartProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use the cart context
 export const useCart = () => useContext(CartContext);
