@@ -6,10 +6,14 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 function AddCourse() {
   const [title, setTitle] = useState('');
+  const [instructor, setInstructor] = useState('');
   const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [duration, setDuration] = useState(''); // Updated to date-time
-  const [schedule, setSchedule] = useState(''); // Updated to date-time
+  const [enrollmentStatus, setEnrollmentStatus] = useState('Open');
+  const [duration, setDuration] = useState('');
+  const [schedule, setSchedule] = useState('');
+  const [location, setLocation] = useState('');
+  const [prerequisites, setPrerequisites] = useState('');
+  const [syllabus, setSyllabus] = useState('');
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
@@ -47,8 +51,8 @@ function AddCourse() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title || !description || !price || !duration || !schedule || !image) {
-      setError('All fields are required!');
+    if (!title || !instructor || !description || !duration || !schedule || !location || !image) {
+      setError('All required fields must be filled out!');
       return;
     }
 
@@ -60,23 +64,31 @@ function AddCourse() {
 
       const courseData = {
         title,
+        instructor,
         description,
-        price,
+        enrollmentStatus,
         duration,
         schedule,
+        location,
+        prerequisites,
+        syllabus,
         createdBy: user.email,
         createdAt: serverTimestamp(),
-        image: imageUrl, // Store the URL of the uploaded image
+        image: imageUrl,
       };
 
       await addDoc(collection(db, 'courses'), courseData);
 
       // Reset form fields
       setTitle('');
+      setInstructor('');
       setDescription('');
-      setPrice('');
+      setEnrollmentStatus('Open');
       setDuration('');
       setSchedule('');
+      setLocation('');
+      setPrerequisites('');
+      setSyllabus('');
       setImage(null);
       setUploading(false);
 
@@ -99,6 +111,14 @@ function AddCourse() {
           className="border p-2 mb-2 w-full"
           required
         />
+        <input
+          type="text"
+          placeholder="Instructor's Name"
+          value={instructor}
+          onChange={(e) => setInstructor(e.target.value)}
+          className="border p-2 mb-2 w-full"
+          required
+        />
         <textarea
           placeholder="Description"
           value={description}
@@ -106,29 +126,51 @@ function AddCourse() {
           className="border p-2 mb-2 w-full"
           required
         />
-        <input
-          type="number"
-          placeholder="Price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
+        <select
+          value={enrollmentStatus}
+          onChange={(e) => setEnrollmentStatus(e.target.value)}
           className="border p-2 mb-2 w-full"
           required
-        />
+        >
+          <option value="Open">Open</option>
+          <option value="Closed">Closed</option>
+          <option value="In Progress">In Progress</option>
+        </select>
         <input
-          type="datetime-local" // Updated to date-time
-          placeholder="Duration"
+          type="datetime-local"
+          placeholder="Course Duration"
           value={duration}
           onChange={(e) => setDuration(e.target.value)}
           className="border p-2 mb-2 w-full"
           required
         />
         <input
-          type="datetime-local" // Updated to date-time
+          type="datetime-local"
           placeholder="Schedule"
           value={schedule}
           onChange={(e) => setSchedule(e.target.value)}
           className="border p-2 mb-2 w-full"
           required
+        />
+        <input
+          type="text"
+          placeholder="Location"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          className="border p-2 mb-2 w-full"
+          required
+        />
+        <textarea
+          placeholder="Pre-requisites"
+          value={prerequisites}
+          onChange={(e) => setPrerequisites(e.target.value)}
+          className="border p-2 mb-2 w-full"
+        />
+        <textarea
+          placeholder="Syllabus"
+          value={syllabus}
+          onChange={(e) => setSyllabus(e.target.value)}
+          className="border p-2 mb-2 w-full"
         />
         <input
           type="file"
