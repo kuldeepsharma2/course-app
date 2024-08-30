@@ -20,8 +20,7 @@ function CourseListingPage() {
         const courseCollection = await getDocs(collection(db, 'courses'));
         const fetchedCourses = courseCollection.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setCourses(fetchedCourses);
-        const totalPages = Math.ceil(fetchedCourses.length / coursesPerPage);
-        setTotalPages(totalPages);
+        setTotalPages(Math.ceil(fetchedCourses.length / coursesPerPage));
       } catch (error) {
         console.error('Error fetching courses:', error);
       }
@@ -61,7 +60,7 @@ function CourseListingPage() {
       await setDoc(doc(db, 'carts', user.uid), {
         [course.id]: {
           ...course,
-          quantity: 1, // Default to 1 since quantity box is removed
+          quantity: 1,
         },
       }, { merge: true });
 
@@ -76,8 +75,8 @@ function CourseListingPage() {
     return enrolledCourses.some(enrolledCourse => enrolledCourse.id === courseId);
   };
 
-  const handleCourseClick = (courseId) => {
-    navigate(`/courses/${courseId}`);
+  const handleCourseClick = (course) => {
+    navigate('/course-detail', { state: { course } }); // Navigate to course detail page with course data
   };
 
   return (
@@ -86,8 +85,8 @@ function CourseListingPage() {
         {currentCourses.map((course) => (
           <div
             key={course.id}
-            className="border rounded-lg p-4 shadow-lg cursor-pointer"
-            onClick={() => handleCourseClick(course.id)}
+            className="border rounded-lg p-4 shadow-lg flex flex-col justify-between"
+            onClick={() => handleCourseClick(course)}
           >
             {course.image && (
               <img
@@ -96,11 +95,11 @@ function CourseListingPage() {
                 className="w-full h-[60%] object-contain mb-4 rounded-md"
               />
             )}
-            <div className="p-3">
+            <div className="p-3 flex-1">
               <h2 className="text-xl font-semibold">{course.title}</h2>
-              <p>{course.description}</p>
+              <p className="line-clamp-3 mt-2">{course.description}</p>
             </div>
-            <div className="items-center justify-center mt-3">
+            <div className="mt-3">
               <p className="text-center font-semibold">Price: ${course.price}</p>
             </div>
             <div className="flex items-center justify-center mt-4">
@@ -109,10 +108,10 @@ function CourseListingPage() {
               ) : (
                 <button
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevents click event from propagating to the parent div
+                    e.stopPropagation();
                     handleBuyNow(course);
                   }}
-                  className="bg-green-500 text-white px-4 py-2 rounded-lg"
+                  className="bg-green-500 text-white px-4 py-2 rounded-lg w-full"
                 >
                   Buy Now
                 </button>

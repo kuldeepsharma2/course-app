@@ -8,8 +8,11 @@ function AddCourse() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
+  const [duration, setDuration] = useState(''); // Updated to date-time
+  const [schedule, setSchedule] = useState(''); // Updated to date-time
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
   const auth = getAuth();
   const user = auth.currentUser;
 
@@ -43,6 +46,13 @@ function AddCourse() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!title || !description || !price || !duration || !schedule || !image) {
+      setError('All fields are required!');
+      return;
+    }
+
+    setError('');
     setUploading(true);
 
     try {
@@ -52,6 +62,8 @@ function AddCourse() {
         title,
         description,
         price,
+        duration,
+        schedule,
         createdBy: user.email,
         createdAt: serverTimestamp(),
         image: imageUrl, // Store the URL of the uploaded image
@@ -63,6 +75,8 @@ function AddCourse() {
       setTitle('');
       setDescription('');
       setPrice('');
+      setDuration('');
+      setSchedule('');
       setImage(null);
       setUploading(false);
 
@@ -83,12 +97,14 @@ function AddCourse() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="border p-2 mb-2 w-full"
+          required
         />
         <textarea
           placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           className="border p-2 mb-2 w-full"
+          required
         />
         <input
           type="number"
@@ -96,12 +112,31 @@ function AddCourse() {
           value={price}
           onChange={(e) => setPrice(e.target.value)}
           className="border p-2 mb-2 w-full"
+          required
+        />
+        <input
+          type="datetime-local" // Updated to date-time
+          placeholder="Duration"
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
+          className="border p-2 mb-2 w-full"
+          required
+        />
+        <input
+          type="datetime-local" // Updated to date-time
+          placeholder="Schedule"
+          value={schedule}
+          onChange={(e) => setSchedule(e.target.value)}
+          className="border p-2 mb-2 w-full"
+          required
         />
         <input
           type="file"
           onChange={(e) => setImage(e.target.files[0])}
           className="border p-2 mb-4 w-full"
+          required
         />
+        {error && <p className="text-red-500 mb-2">{error}</p>}
         <button
           type="submit"
           className={`bg-blue-500 text-white p-2 rounded ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}

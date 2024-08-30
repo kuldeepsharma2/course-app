@@ -1,37 +1,27 @@
-// src/pages/CourseDetailsPage.js
 import React, { useState, useEffect } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import CourseDetails from '../components/CourseDetails';
-import { useNavigate } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
-import { useCart } from '../contexts/CartContext'; // Assuming you're using CartContext
 
-const CourseDetailsPage = ({ match }) => {
-  const [course, setCourse] = useState(null);
-  const [isEnrolled, setIsEnrolled] = useState(false);
+function CourseDetailPage() {
+  const location = useLocation();
   const navigate = useNavigate();
   const auth = getAuth();
   const user = auth.currentUser;
-  const { addItemToCart } = useCart(); // Hook for cart context
 
+  const { course } = location.state || {};
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  
   useEffect(() => {
-    const fetchCourse = async () => {
-      const docRef = doc(db, 'courses', match.params.id);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setCourse(docSnap.data());
-      }
-    };
-
     const checkEnrollment = async () => {
-      if (user) {
+      if (user && course) {
         try {
           const enrolledCoursesRef = doc(db, 'students', user.uid);
           const enrolledCoursesDoc = await getDoc(enrolledCoursesRef);
           if (enrolledCoursesDoc.exists()) {
             const enrolledCourses = enrolledCoursesDoc.data().courses || [];
-            setIsEnrolled(enrolledCourses.some(enrolledCourse => enrolledCourse.id === match.params.id));
+            setIsEnrolled(enrolledCourses.some(enrolledCourse => enrolledCourse.id === course.id));
           }
         } catch (error) {
           console.error('Error checking enrollment:', error);
@@ -39,9 +29,8 @@ const CourseDetailsPage = ({ match }) => {
       }
     };
 
-    fetchCourse();
     checkEnrollment();
-  }, [match.params.id, user]);
+  }, [user, course]);
 
   const handleBuyNow = async () => {
     if (!user) {
@@ -50,7 +39,13 @@ const CourseDetailsPage = ({ match }) => {
     }
 
     try {
-      await addItemToCart(course);
+      await setDoc(doc(db, 'carts', user.uid), {
+        [course.id]: {
+          ...course,
+          quantity: 1,
+        },
+      }, { merge: true });
+
       alert('Item added to cart!');
       navigate('/cart');
     } catch (error) {
@@ -58,37 +53,38 @@ const CourseDetailsPage = ({ match }) => {
     }
   };
 
+  if (!course) {
+    return <div>No course details available.</div>;
+  }
+
   return (
     <div className="container mx-auto mt-8">
-      {course ? (
-        <div>
-          <div className="relative mb-6">
-            <img
-              src={course.image}
-              alt={course.title}
-              className="w-full h-[300px] object-cover rounded-t-lg"
-            />
-            <h2 className="absolute bottom-4 left-4 text-white text-3xl font-bold bg-black bg-opacity-50 p-2 rounded-lg">{course.title}</h2>
-          </div>
-          <CourseDetails course={course} />
-          <div className="flex justify-center mt-4">
-            {isEnrolled ? (
-              <p className="text-red-500 font-semibold">You have already enrolled in this course.</p>
-            ) : (
-              <button
-                onClick={handleBuyNow}
-                className="bg-green-500 text-white px-4 py-2 rounded-lg"
-              >
-                Buy Now
-              </button>
-            )}
-          </div>
-        </div>
-      ) : (
-        <p>Loading...</p>
+      <h1 className="text-2xl font-bold mb-4">{course.title}</h1>
+      {course.image && (
+        <img
+          src={course.image}
+          alt={course.title}
+          className="w-full h-[60%] object-contain mb-4 rounded-md"
+        />
       )}
+      <p className="text-lg">{course.description}</p>
+      <p className="text-lg">Price: ${course.price}</p>
+      <p className="text-lg">Duration: {new Date(course.duration).toLocaleString()}</p>
+      <p className="text-lg">Schedule: {new Date(course.schedule).toLocaleString()}</p>
+      <div className="mt-4 flex items-center justify-center">
+        {isEnrolled ? (
+          <p className="text-red-500 font-semibold">You are already enrolled in this course</p>
+        ) : (
+          <button
+            onClick={handleBuyNow}
+            className="bg-green-500 text-white px-4 py-2 rounded-lg"
+          >
+            Buy Now
+          </button>
+        )}
+      </div>
     </div>
   );
-};
+}
 
-export default CourseDetailsPage;
+export default CourseDetailPage;
