@@ -68,9 +68,22 @@ function CourseDetailPage() {
         />
       )}
       <p className="text-lg">{course.description}</p>
+      <p className="text-lg">Instructor: {course.instructor}</p>
       <p className="text-lg">Price: ${course.price}</p>
       <p className="text-lg">Duration: {new Date(course.duration).toLocaleString()}</p>
       <p className="text-lg">Schedule: {new Date(course.schedule).toLocaleString()}</p>
+      <p className="text-lg">Location: {course.location}</p>
+      <p className="text-lg">Pre-requisites: {course.prerequisites}</p>
+      <p className="text-lg">Enrollment Status: {course.enrollmentStatus}</p>
+      
+      {/* Syllabus as an expandable item */}
+      <details className="mt-4">
+        <summary className="cursor-pointer text-blue-500">View Syllabus</summary>
+        <div className="mt-2">
+          <p>{course.syllabus}</p>
+        </div>
+      </details>
+      
       <div className="mt-4 flex items-center justify-center">
         {isEnrolled ? (
           <p className="text-red-500 font-semibold">You are already enrolled in this course</p>
