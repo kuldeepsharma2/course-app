@@ -14,6 +14,7 @@ function AddCourse() {
   const [location, setLocation] = useState('');
   const [prerequisites, setPrerequisites] = useState('');
   const [syllabus, setSyllabus] = useState('');
+  const [price, setPrice] = useState(''); // New state for price
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
@@ -51,7 +52,7 @@ function AddCourse() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title || !instructor || !description || !duration || !schedule || !location || !image) {
+    if (!title || !instructor || !description || !price || !duration || !schedule || !location || !image) {
       setError('All required fields must be filled out!');
       return;
     }
@@ -72,6 +73,7 @@ function AddCourse() {
         location,
         prerequisites,
         syllabus,
+        price, // Add price to courseData
         createdBy: user.email,
         createdAt: serverTimestamp(),
         image: imageUrl,
@@ -89,6 +91,7 @@ function AddCourse() {
       setLocation('');
       setPrerequisites('');
       setSyllabus('');
+      setPrice(''); // Reset price
       setImage(null);
       setUploading(false);
 
@@ -171,6 +174,14 @@ function AddCourse() {
           value={syllabus}
           onChange={(e) => setSyllabus(e.target.value)}
           className="border p-2 mb-2 w-full"
+        />
+        <input
+          type="number"
+          placeholder="Price"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          className="border p-2 mb-2 w-full"
+          required
         />
         <input
           type="file"
