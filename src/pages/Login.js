@@ -1,34 +1,30 @@
 import React, { useState } from 'react';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState(''); // State for error message
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleGoogleLogin = async () => {
     setError(''); // Clear previous errors
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
+
     try {
-      const auth = getAuth();
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithPopup(auth, provider);
       navigate('/'); // Redirect to the dashboard after successful login
     } catch (error) {
-      // Check the error code and set the error message accordingly
-      if (error.code === 'auth/invalid-email') {
-        setError('Your email is wrong');
-        alert('Invalid Email: Please enter a valid email address.');
-      } else if (error.code === 'auth/wrong-password') {
-        setError('Your password is wrong');
-        alert('Invalid Password: Please enter the correct password.');
-      } else if (error.code === 'auth/too-many-requests') {
-        setError('Too many failed login attempts. Please try again later or reset your password.');
-        alert('Too Many Requests: Please try again later.');
-      } else if (error.code === 'auth/invalid-credential') {
-        setError('Invalid credentials. Please enter valid credentials.');
-        alert('Invalid Credentials: Please enter valid credentials.');
+      // Handle possible errors
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        setError('An account already exists with a different credential.');
+        alert('An account already exists with a different credential.');
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        setError('Popup request was canceled.');
+        alert('Popup request was canceled.');
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        setError('The popup was closed before completing the sign in.');
+        alert('The popup was closed before completing the sign in.');
       } else {
         setError('An error occurred. Please try again.');
         alert('An error occurred. Please try again.');
@@ -39,26 +35,13 @@ function Login() {
   return (
     <div className="container mx-auto mt-8">
       <h1 className="text-2xl font-bold mb-4">Login</h1>
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="border p-2 mb-2 w-full"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border p-2 mb-4 w-full"
-        />
-        {error && <p className="text-red-500 mb-4">{error}</p>} {/* Display error message */}
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-          Login
-        </button>
-      </form>
+      <button
+        onClick={handleGoogleLogin}
+        className="bg-red-500 text-white p-2 rounded"
+      >
+        Sign in with Google
+      </button>
+      {error && <p className="text-red-500 mt-4">{error}</p>} {/* Display error message */}
     </div>
   );
 }
