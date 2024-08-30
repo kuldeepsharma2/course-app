@@ -66,7 +66,7 @@ function Header() {
             Add Course
           </button>
           {!user ? (
-            <Link to="/register" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300">Register</Link>
+            <Link to="/login" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300">Register</Link>
           ) : (
             <button onClick={handleLogout} className="text-red-500 hover:bg-gray-700 px-3 py-2 rounded transition duration-300">
               Logout

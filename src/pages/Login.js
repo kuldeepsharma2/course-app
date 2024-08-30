@@ -1,6 +1,7 @@
 import React from 'react';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import { FcGoogle } from 'react-icons/fc'; // Google icon from react-icons
 
 function Login() {
   const navigate = useNavigate();
@@ -18,14 +19,17 @@ function Login() {
   };
 
   return (
-    <div className="container mx-auto mt-8">
-      <h1 className="text-2xl font-bold mb-4">Login</h1>
-      <button
-        onClick={handleGoogleLogin}
-        className="bg-red-500 text-white p-2 rounded"
-      >
-        Sign in with Google
-      </button>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-6 rounded shadow-md text-center">
+        <h1 className="text-2xl font-bold mb-6">Login</h1>
+        <button
+          onClick={handleGoogleLogin}
+          className="flex items-center justify-center bg-white border border-gray-300 text-gray-600 p-3 rounded-lg shadow hover:shadow-md hover:bg-gray-50"
+        >
+          <FcGoogle className="text-2xl mr-2" />
+          Sign in with Google
+        </button>
+      </div>
     </div>
   );
 }
