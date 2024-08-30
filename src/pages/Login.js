@@ -1,4 +1,3 @@
-// src/pages/Login.js
 import React, { useState } from 'react';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
@@ -20,12 +19,19 @@ function Login() {
       // Check the error code and set the error message accordingly
       if (error.code === 'auth/invalid-email') {
         setError('Your email is wrong');
+        alert('Invalid Email: Please enter a valid email address.');
       } else if (error.code === 'auth/wrong-password') {
         setError('Your password is wrong');
+        alert('Invalid Password: Please enter the correct password.');
       } else if (error.code === 'auth/too-many-requests') {
         setError('Too many failed login attempts. Please try again later or reset your password.');
+        alert('Too Many Requests: Please try again later.');
+      } else if (error.code === 'auth/invalid-credential') {
+        setError('Invalid credentials. Please enter valid credentials.');
+        alert('Invalid Credentials: Please enter valid credentials.');
       } else {
         setError('An error occurred. Please try again.');
+        alert('An error occurred. Please try again.');
       }
     }
   };
