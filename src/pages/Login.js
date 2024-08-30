@@ -18,10 +18,12 @@ function Login() {
       navigate('/'); // Redirect to the dashboard after successful login
     } catch (error) {
       // Check the error code and set the error message accordingly
-      if (error.code.includes('auth/invalid-email')) {
+      if (error.code === 'auth/invalid-email') {
         setError('Your email is wrong');
-      } else if (error.code.includes('auth/wrong-password')) {
+      } else if (error.code === 'auth/wrong-password') {
         setError('Your password is wrong');
+      } else if (error.code === 'auth/too-many-requests') {
+        setError('Too many failed login attempts. Please try again later or reset your password.');
       } else {
         setError('An error occurred. Please try again.');
       }
