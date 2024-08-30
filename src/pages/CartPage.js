@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { doc, getDoc, updateDoc, arrayRemove } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../contexts/CartContext'; // Import useCart to use clearCart function
 
 function CartPage() {
   const [cartItems, setCartItems] = useState([]);
@@ -10,6 +11,7 @@ function CartPage() {
   const auth = getAuth();
   const user = auth.currentUser;
   const navigate = useNavigate();
+  const { clearCart } = useCart(); // Get clearCart function from CartContext
 
   useEffect(() => {
     if (user) {
@@ -18,10 +20,20 @@ function CartPage() {
           const cartDoc = await getDoc(doc(db, 'carts', user.uid));
           if (cartDoc.exists()) {
             const cartData = cartDoc.data();
-            const items = Object.values(cartData).filter(item => item && item.id); // Ensure no empty items
-            setCartItems(items);
+            const items = Object.values(cartData).filter(item => item && item.id);
 
-            const total = items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
+            // Fetch enrolled courses
+            const enrolledCoursesRef = doc(db, 'students', user.uid);
+            const enrolledCoursesDoc = await getDoc(enrolledCoursesRef);
+            const enrolledCoursesData = enrolledCoursesDoc.exists() ? enrolledCoursesDoc.data().courses || [] : [];
+            const enrolledCourseIds = new Set(enrolledCoursesData.map(course => course.id));
+
+            // Filter out enrolled courses from cart
+            const filteredItems = items.filter(item => !enrolledCourseIds.has(item.id));
+
+            setCartItems(filteredItems);
+
+            const total = filteredItems.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
             setTotalAmount(total);
           }
         } catch (error) {
@@ -38,14 +50,26 @@ function CartPage() {
       try {
         const cartRef = doc(db, 'carts', user.uid);
         await updateDoc(cartRef, {
-          [itemId]: arrayRemove() // Correctly remove the item
+          [itemId]: null
         });
+
+        // Update cart state
         setCartItems(prevItems => prevItems.filter(item => item.id !== itemId));
         const updatedCartDoc = await getDoc(cartRef);
         const updatedCartData = updatedCartDoc.data();
         const updatedItems = Object.values(updatedCartData || {}).filter(item => item && item.id);
-        const total = updatedItems.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
-        setCartItems(updatedItems);
+
+        // Fetch enrolled courses
+        const enrolledCoursesRef = doc(db, 'students', user.uid);
+        const enrolledCoursesDoc = await getDoc(enrolledCoursesRef);
+        const enrolledCoursesData = enrolledCoursesDoc.exists() ? enrolledCoursesDoc.data().courses || [] : [];
+        const enrolledCourseIds = new Set(enrolledCoursesData.map(course => course.id));
+
+        // Filter out enrolled courses from cart
+        const filteredItems = updatedItems.filter(item => !enrolledCourseIds.has(item.id));
+
+        const total = filteredItems.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
+        setCartItems(filteredItems);
         setTotalAmount(total);
       } catch (error) {
         console.error('Error removing item from cart:', error);
@@ -53,13 +77,34 @@ function CartPage() {
     }
   };
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
     if (!user) {
       navigate('/login');
       return;
     }
-    // Logic to handle the checkout process
-    alert('Proceeding to checkout!');
+
+    try {
+      const enrolledCoursesRef = doc(db, 'students', user.uid);
+      const enrolledCoursesDoc = await getDoc(enrolledCoursesRef);
+      const existingCourses = enrolledCoursesDoc.exists() ? enrolledCoursesDoc.data().courses || [] : [];
+
+      // Add all items from cart to enrolled courses
+      const newCourses = [...existingCourses, ...cartItems.map(item => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        image: item.image
+      }))];
+      await setDoc(enrolledCoursesRef, { courses: newCourses });
+
+      // Clear the cart
+      await clearCart();
+
+      // Navigate to the Student Dashboard
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Error enrolling courses:', error);
+    }
   };
 
   if (!user) {
@@ -70,7 +115,7 @@ function CartPage() {
     <div className="container mx-auto mt-8">
       <h1 className="text-2xl font-bold mb-4">Your Cart</h1>
       {cartItems.length > 0 ? (
-        <div className="flex flex-wrap -mx-4">
+        <div className="-mx-4">
           {cartItems.map((item) => (
             <div key={item.id} className="flex flex-col sm:flex-row bg-white shadow-lg rounded-lg mb-4 p-4 mx-4">
               <div className="flex-shrink-0 mb-4 sm:mb-0 sm:w-1/3">
@@ -78,7 +123,7 @@ function CartPage() {
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-32 object-cover rounded-md"
+                    className="w-full h-[60%] object-contain rounded-md"
                   />
                 )}
               </div>
@@ -92,19 +137,18 @@ function CartPage() {
                   className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition mr-2"
                 >
                   Remove from Cart
-                      </button>
-                      <button
-              onClick={handleBuyNow}
-              className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
-            >
-              Buy Now
-            </button>
+                </button>
+                <button
+                  onClick={handleBuyNow}
+                  className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
+                >
+                  Buy Now
+                </button>
               </div>
             </div>
           ))}
           <div className="justify-between items-center mt-4">
-            <h2 className="text-xl font-bold">Total Amount: ${totalAmount}</h2>
-            
+            <h2 className="text-xl font-bold text-center">Total Amount: ${totalAmount}</h2>
           </div>
         </div>
       ) : (

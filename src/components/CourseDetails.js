@@ -4,7 +4,7 @@ import React from 'react';
 const CourseDetails = ({ course }) => {
   return (
     <div className="p-8 border rounded shadow-lg">
-      <h1 className="text-3xl font-bold mb-4">{course.name}</h1>
+      <h1 className="text-3xl font-bold mb-4">{course.title}</h1>
       <p>Instructor: {course.instructor}</p>
       <p>Description: {course.description}</p>
       <p>Enrollment Status: {course.enrollmentStatus}</p>

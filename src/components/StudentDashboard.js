@@ -1,33 +1,62 @@
-// src/components/StudentDashboard.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { db } from '../firebase';
 
-const StudentDashboard = ({ courses }) => {
+function StudentDashboardPage() {
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  useEffect(() => {
+    if (user) {
+      const fetchEnrolledCourses = async () => {
+        try {
+          const studentDoc = await getDoc(doc(db, 'students', user.uid));
+          if (studentDoc.exists()) {
+            setEnrolledCourses(studentDoc.data().courses || []);
+          }
+        } catch (error) {
+          console.error('Error fetching enrolled courses:', error);
+        }
+      };
+
+      fetchEnrolledCourses();
+    }
+  }, [user]);
+
   return (
-    <div className="grid grid-cols-1 gap-4">
-      {courses.map(course => (
-        <div key={course.id} className="p-4 border rounded shadow-sm">
-          <h2 className="text-xl font-bold">{course.name}</h2>
-          <p>Instructor: {course.instructor}</p>
-          <p>Due Date: {course.dueDate}</p>
-          <div className="relative pt-1">
-            <div className="flex mb-2 items-center justify-between">
-              <div className="text-right">
-                <span className="text-xs font-semibold inline-block text-blue-600">
-                  {course.progress}%
-                </span>
+    <div className="container mx-auto mt-8">
+      <h1 className="text-2xl font-bold mb-4">Your Enrolled Courses</h1>
+      {enrolledCourses.length > 0 ? (
+        <div className="-mx-4">
+          {enrolledCourses.map(course => (
+            <div
+              key={course.id} // Ensure each item has a unique key
+              className="flex flex-col sm:flex-row bg-white shadow-lg rounded-lg mb-4 p-4 mx-4"
+            >
+              <div className="flex-shrink-0 mb-4 sm:mb-0 sm:w-1/3">
+                {course.image && (
+                  <img
+                    src={course.image}
+                    alt={course.title}
+                    className="w-full h-[60%] object-contain rounded-md"
+                  />
+                )}
+              </div>
+              <div className="flex-1 sm:ml-4">
+                <h2 className="text-xl font-semibold mb-2">{course.title}</h2>
+                <p className="mb-2">{course.description}</p>
+                <p className="text-gray-500 mb-2">Price: ${course.price}</p>
               </div>
             </div>
-            <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
-              <div style={{ width: `${course.progress}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
-            </div>
-          </div>
-          <button className="mt-2 px-4 py-2 bg-green-500 text-white rounded" onClick={() => console.log(`Completed ${course.name}`)}>
-            Mark as Completed
-          </button>
+          ))}
         </div>
-      ))}
+      ) : (
+        <p>You are not enrolled in any courses.</p>
+      )}
     </div>
   );
-};
+}
 
-export default StudentDashboard;
+export default StudentDashboardPage;

@@ -42,12 +42,12 @@ function Header() {
     <header className="bg-gray-800 text-white shadow-md">
       <div className="container mx-auto flex justify-between items-center p-4">
         <h1 className="text-2xl font-bold">
-          <Link to="/" className="hover:text-gray-400">App Logo</Link>
+          <Link to="/" className="hover:text-gray-400">Courses</Link>
         </h1>
         <nav className="flex items-center space-x-4">
           <Link to="/" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300">Courses</Link>
           {user && (
-            <Link to="/StudentDashboardPage" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300">Dashboard</Link>
+            <Link to="/dashboard" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300">Student Dashboard</Link>
           )}
           {user ? (
             <Link to="/cart" className="relative hover:bg-gray-700 px-3 py-2 rounded transition duration-300">
