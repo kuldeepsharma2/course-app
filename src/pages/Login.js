@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
-  const [error, setError] = useState(''); // State for error message
   const navigate = useNavigate();
 
   const handleGoogleLogin = async () => {
-    setError(''); // Clear previous errors
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
 
@@ -15,20 +13,7 @@ function Login() {
       await signInWithPopup(auth, provider);
       navigate('/'); // Redirect to the dashboard after successful login
     } catch (error) {
-      // Handle possible errors
-      if (error.code === 'auth/account-exists-with-different-credential') {
-        setError('An account already exists with a different credential.');
-        alert('An account already exists with a different credential.');
-      } else if (error.code === 'auth/cancelled-popup-request') {
-        setError('Popup request was canceled.');
-        alert('Popup request was canceled.');
-      } else if (error.code === 'auth/popup-closed-by-user') {
-        setError('The popup was closed before completing the sign in.');
-        alert('The popup was closed before completing the sign in.');
-      } else {
-        setError('An error occurred. Please try again.');
-        alert('An error occurred. Please try again.');
-      }
+      alert('An error occurred during sign-in. Please try again.'); // Simple error handling
     }
   };
 
@@ -41,7 +26,6 @@ function Login() {
       >
         Sign in with Google
       </button>
-      {error && <p className="text-red-500 mt-4">{error}</p>} {/* Display error message */}
     </div>
   );
 }
