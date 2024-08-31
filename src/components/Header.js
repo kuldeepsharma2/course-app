@@ -5,6 +5,7 @@ import { useCart } from '../contexts/CartContext';
 
 function Header() {
   const [user, setUser] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const auth = getAuth();
   const { cart } = useCart();
@@ -44,31 +45,74 @@ function Header() {
         <h1 className="text-2xl font-bold">
           <Link to="/" className="hover:text-gray-400">Courses</Link>
         </h1>
-        <nav className="flex items-center space-x-4">
-          <Link to="/" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300">Courses</Link>
+        <div className="hidden md:flex items-center space-x-4">
+          <nav className="flex items-center space-x-4">
+            <Link to="/" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300">Courses</Link>
+            {user && (
+              <Link to="/dashboard" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300">Student Dashboard</Link>
+            )}
+            {user ? (
+              <Link to="/cart" className="relative hover:bg-gray-700 px-3 py-2 rounded transition duration-300">
+                Cart
+                {getCartQuantity() > 0 && (
+                  <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-2 py-1 -translate-x-1/2 -translate-y-1/2">{getCartQuantity()}</span>
+                )}
+              </Link>
+            ) : (
+              <Link to="/login" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300">Login</Link>
+            )}
+            <button
+              onClick={handleAddCourse}
+              className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300"
+            >
+              Add Course
+            </button>
+            {!user ? (
+              <Link to="/login" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300">Register</Link>
+            ) : (
+              <button onClick={handleLogout} className="text-red-500 hover:bg-gray-700 px-3 py-2 rounded transition duration-300">
+                Logout
+              </button>
+            )}
+          </nav>
+        </div>
+        <button 
+          className="md:hidden text-white focus:outline-none" 
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+          </svg>
+        </button>
+      </div>
+      <div 
+        className={`md:hidden fixed top-0 left-0 w-full bg-gray-800 text-white transition-transform transform ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}
+      >
+        <nav className="flex flex-col items-center space-y-4 p-4">
+          <Link to="/" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300" onClick={() => setIsMenuOpen(false)}>Courses</Link>
           {user && (
-            <Link to="/dashboard" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300">Student Dashboard</Link>
+            <Link to="/dashboard" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300" onClick={() => setIsMenuOpen(false)}>Student Dashboard</Link>
           )}
           {user ? (
-            <Link to="/cart" className="relative hover:bg-gray-700 px-3 py-2 rounded transition duration-300">
+            <Link to="/cart" className="relative hover:bg-gray-700 px-3 py-2 rounded transition duration-300" onClick={() => setIsMenuOpen(false)}>
               Cart
               {getCartQuantity() > 0 && (
                 <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-2 py-1 -translate-x-1/2 -translate-y-1/2">{getCartQuantity()}</span>
               )}
             </Link>
           ) : (
-            <Link to="/login" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300">Login</Link>
+            <Link to="/login" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300" onClick={() => setIsMenuOpen(false)}>Login</Link>
           )}
           <button
-            onClick={handleAddCourse}
+            onClick={() => { handleAddCourse(); setIsMenuOpen(false); }}
             className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300"
           >
             Add Course
           </button>
           {!user ? (
-            <Link to="/login" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300">Register</Link>
+            <Link to="/login" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300" onClick={() => setIsMenuOpen(false)}>Register</Link>
           ) : (
-            <button onClick={handleLogout} className="text-red-500 hover:bg-gray-700 px-3 py-2 rounded transition duration-300">
+            <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="text-red-500 hover:bg-gray-700 px-3 py-2 rounded transition duration-300">
               Logout
             </button>
           )}
