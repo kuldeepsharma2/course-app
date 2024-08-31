@@ -26,21 +26,21 @@ function StudentDashboardPage() {
   }, [user]);
 
   return (
-    <div className="container mx-auto mt-8">
-      <h1 className="text-2xl font-bold mb-4">Your Enrolled Courses</h1>
+    <div className="container mx-auto mt-8 px-4">
+      <h1 className="text-2xl font-bold mb-4 text-center">Your Enrolled Courses</h1>
       {enrolledCourses.length > 0 ? (
-        <div className="-mx-4">
+        <div className="space-y-4">
           {enrolledCourses.map(course => (
             <div
               key={course.id} // Ensure each item has a unique key
-              className="flex flex-col sm:flex-row bg-white shadow-lg rounded-lg mb-4 p-4 mx-4"
+              className="flex flex-col sm:flex-row bg-white shadow-lg rounded-lg mb-4 p-4"
             >
               <div className="flex-shrink-0 mb-4 sm:mb-0 sm:w-1/3">
                 {course.image && (
                   <img
                     src={course.image}
                     alt={course.title}
-                    className="w-full h-[60%] object-contain rounded-md"
+                    className="w-full h-48 object-contain rounded-md"
                   />
                 )}
               </div>
@@ -53,7 +53,7 @@ function StudentDashboardPage() {
           ))}
         </div>
       ) : (
-        <p>You are not enrolled in any courses.</p>
+        <p className="text-center">You are not enrolled in any courses.</p>
       )}
     </div>
   );
