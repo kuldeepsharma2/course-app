@@ -14,7 +14,7 @@ function AddCourse() {
   const [location, setLocation] = useState('');
   const [prerequisites, setPrerequisites] = useState('');
   const [syllabus, setSyllabus] = useState('');
-  const [price, setPrice] = useState(''); // New state for price
+  const [price, setPrice] = useState('');
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
@@ -73,7 +73,7 @@ function AddCourse() {
         location,
         prerequisites,
         syllabus,
-        price, // Add price to courseData
+        price,
         createdBy: user.email,
         createdAt: serverTimestamp(),
         image: imageUrl,
@@ -91,7 +91,7 @@ function AddCourse() {
       setLocation('');
       setPrerequisites('');
       setSyllabus('');
-      setPrice(''); // Reset price
+      setPrice('');
       setImage(null);
       setUploading(false);
 
@@ -103,15 +103,15 @@ function AddCourse() {
   };
 
   return (
-    <div className="container mx-auto mt-8">
-      <h1 className="text-2xl font-bold mb-4">Add Course</h1>
-      <form onSubmit={handleSubmit}>
+    <div className="container mx-auto px-4 py-8 sm:px-6 sm:py-10 md:px-8 md:py-12 max-w-2xl">
+      <h1 className="text-3xl font-bold mb-6 text-center">Add Course</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
           placeholder="Course Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="border p-2 mb-2 w-full"
+          className="border border-gray-300 rounded-lg p-3 w-full"
           required
         />
         <input
@@ -119,20 +119,20 @@ function AddCourse() {
           placeholder="Instructor's Name"
           value={instructor}
           onChange={(e) => setInstructor(e.target.value)}
-          className="border p-2 mb-2 w-full"
+          className="border border-gray-300 rounded-lg p-3 w-full"
           required
         />
         <textarea
           placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="border p-2 mb-2 w-full"
+          className="border border-gray-300 rounded-lg p-3 w-full h-32 resize-none"
           required
         />
         <select
           value={enrollmentStatus}
           onChange={(e) => setEnrollmentStatus(e.target.value)}
-          className="border p-2 mb-2 w-full"
+          className="border border-gray-300 rounded-lg p-3 w-full"
           required
         >
           <option value="Open">Open</option>
@@ -141,18 +141,16 @@ function AddCourse() {
         </select>
         <input
           type="datetime-local"
-          placeholder="Course Duration"
           value={duration}
           onChange={(e) => setDuration(e.target.value)}
-          className="border p-2 mb-2 w-full"
+          className="border border-gray-300 rounded-lg p-3 w-full"
           required
         />
         <input
           type="datetime-local"
-          placeholder="Schedule"
           value={schedule}
           onChange={(e) => setSchedule(e.target.value)}
-          className="border p-2 mb-2 w-full"
+          className="border border-gray-300 rounded-lg p-3 w-full"
           required
         />
         <input
@@ -160,39 +158,39 @@ function AddCourse() {
           placeholder="Location"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          className="border p-2 mb-2 w-full"
+          className="border border-gray-300 rounded-lg p-3 w-full"
           required
         />
         <textarea
           placeholder="Pre-requisites"
           value={prerequisites}
           onChange={(e) => setPrerequisites(e.target.value)}
-          className="border p-2 mb-2 w-full"
+          className="border border-gray-300 rounded-lg p-3 w-full h-32 resize-none"
         />
         <textarea
           placeholder="Syllabus"
           value={syllabus}
           onChange={(e) => setSyllabus(e.target.value)}
-          className="border p-2 mb-2 w-full"
+          className="border border-gray-300 rounded-lg p-3 w-full h-32 resize-none"
         />
         <input
           type="number"
           placeholder="Price"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
-          className="border p-2 mb-2 w-full"
+          className="border border-gray-300 rounded-lg p-3 w-full"
           required
         />
         <input
           type="file"
           onChange={(e) => setImage(e.target.files[0])}
-          className="border p-2 mb-4 w-full"
+          className="border border-gray-300 rounded-lg p-3 w-full"
           required
         />
-        {error && <p className="text-red-500 mb-2">{error}</p>}
+        {error && <p className="text-red-500 mb-2 text-center">{error}</p>}
         <button
           type="submit"
-          className={`bg-blue-500 text-white p-2 rounded ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`bg-blue-500 text-white p-3 rounded-lg w-full ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
           disabled={uploading}
         >
           {uploading ? 'Uploading...' : 'Add Course'}

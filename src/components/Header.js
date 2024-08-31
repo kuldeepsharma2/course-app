@@ -68,7 +68,7 @@ function Header() {
               Add Course
             </button>
             {!user ? (
-              <Link to="/login" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300">Register</Link>
+              <Link to="/register" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300">Register</Link>
             ) : (
               <button onClick={handleLogout} className="text-red-500 hover:bg-gray-700 px-3 py-2 rounded transition duration-300">
                 Logout
@@ -86,9 +86,20 @@ function Header() {
         </button>
       </div>
       <div 
-        className={`md:hidden fixed top-0 left-0 w-full bg-gray-800 text-white transition-transform transform ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}
+        className={`md:hidden fixed top-0 left-0 w-full bg-gray-800 text-white transition-transform transform ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <nav className="flex flex-col items-center space-y-4 p-4">
+        <div className="flex justify-between items-center p-4 border-b border-gray-700">
+          <h1 className="text-xl font-bold">Menu</h1>
+          <button
+            className="text-white focus:outline-none"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <nav className="flex flex-col items-start p-4 space-y-4">
           <Link to="/" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300" onClick={() => setIsMenuOpen(false)}>Courses</Link>
           {user && (
             <Link to="/dashboard" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300" onClick={() => setIsMenuOpen(false)}>Student Dashboard</Link>
@@ -110,7 +121,7 @@ function Header() {
             Add Course
           </button>
           {!user ? (
-            <Link to="/login" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300" onClick={() => setIsMenuOpen(false)}>Register</Link>
+            <Link to="/register" className="hover:bg-gray-700 px-3 py-2 rounded transition duration-300" onClick={() => setIsMenuOpen(false)}>Register</Link>
           ) : (
             <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="text-red-500 hover:bg-gray-700 px-3 py-2 rounded transition duration-300">
               Logout

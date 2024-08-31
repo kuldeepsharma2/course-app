@@ -12,7 +12,7 @@ function CourseDetailPage() {
 
   const { course } = location.state || {};
   const [isEnrolled, setIsEnrolled] = useState(false);
-  
+
   useEffect(() => {
     const checkEnrollment = async () => {
       if (user && course) {
@@ -58,39 +58,41 @@ function CourseDetailPage() {
   }
 
   return (
-    <div className="container mx-auto mt-8">
-      <h1 className="text-2xl font-bold mb-4">{course.title}</h1>
+    <div className="container mx-auto px-4 py-8 sm:px-6 sm:py-10 md:px-8 md:py-12">
+      <h1 className="text-3xl font-bold mb-4 text-center">{course.title}</h1>
       {course.image && (
         <img
           src={course.image}
           alt={course.title}
-          className="w-full h-[60%] object-contain mb-4 rounded-md"
+          className="w-full h-100 object-cover mb-4 rounded-lg shadow-lg"
         />
       )}
-      <p className="text-lg">{course.description}</p>
-      <p className="text-lg">Instructor: {course.instructor}</p>
-      <p className="text-lg">Price: ${course.price}</p>
-      <p className="text-lg">Duration: {new Date(course.duration).toLocaleString()}</p>
-      <p className="text-lg">Schedule: {new Date(course.schedule).toLocaleString()}</p>
-      <p className="text-lg">Location: {course.location}</p>
-      <p className="text-lg">Pre-requisites: {course.prerequisites}</p>
-      <p className="text-lg">Enrollment Status: {course.enrollmentStatus}</p>
-      
+      <div className="text-lg mb-4 space-y-2">
+        <p><strong>Description:</strong> {course.description}</p>
+        <p><strong>Instructor:</strong> {course.instructor}</p>
+        <p><strong>Price:</strong> ${course.price}</p>
+        <p><strong>Duration:</strong> {new Date(course.duration).toLocaleString()}</p>
+        <p><strong>Schedule:</strong> {new Date(course.schedule).toLocaleString()}</p>
+        <p><strong>Location:</strong> {course.location}</p>
+        <p><strong>Pre-requisites:</strong> {course.prerequisites}</p>
+        <p><strong>Enrollment Status:</strong> {course.enrollmentStatus}</p>
+      </div>
+
       {/* Syllabus as an expandable item */}
       <details className="mt-4">
-        <summary className="cursor-pointer text-blue-500">View Syllabus</summary>
+        <summary className="cursor-pointer text-blue-500 font-semibold">View Syllabus</summary>
         <div className="mt-2">
           <p>{course.syllabus}</p>
         </div>
       </details>
-      
+
       <div className="mt-4 flex items-center justify-center">
         {isEnrolled ? (
           <p className="text-red-500 font-semibold">You are already enrolled in this course</p>
         ) : (
           <button
             onClick={handleBuyNow}
-            className="bg-green-500 text-white px-4 py-2 rounded-lg"
+            className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-300"
           >
             Buy Now
           </button>
