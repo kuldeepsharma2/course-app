@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { getAuth } from 'firebase/auth';
+import { toast, ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
+import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
 function CourseDetailPage() {
   const location = useLocation();
@@ -46,10 +48,14 @@ function CourseDetailPage() {
         },
       }, { merge: true });
 
-      alert('Item added to cart!');
-      navigate('/cart');
+      // Show success toast and delay redirection
+      toast.success('Item added to cart! Redirecting to cart...');
+      setTimeout(() => {
+        navigate('/cart');
+      }, 7000); // Delay redirection by 7 seconds
     } catch (error) {
       console.error('Error adding item to cart:', error);
+      toast.error('Error adding item to cart');
     }
   };
 
@@ -98,6 +104,7 @@ function CourseDetailPage() {
           </button>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 }
