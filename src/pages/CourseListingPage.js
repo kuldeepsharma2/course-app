@@ -3,6 +3,8 @@ import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { getAuth } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function CourseListingPage() {
   const [courses, setCourses] = useState([]);
@@ -64,10 +66,16 @@ function CourseListingPage() {
         },
       }, { merge: true });
 
-      alert('Item added to cart!');
-      navigate('/cart');
+      // Show success toast notification when item is added to cart
+      toast.success('Item added to cart!');
+      
+      // Redirect to cart page after 8 seconds
+      setTimeout(() => {
+        navigate('/cart');
+      }, 8000);
     } catch (error) {
       console.error('Error adding item to cart:', error);
+      toast.error('Error adding item to cart'); // Show error toast notification
     }
   };
 
@@ -138,6 +146,7 @@ function CourseListingPage() {
           </button>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 }

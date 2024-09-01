@@ -4,6 +4,8 @@ import { getAuth } from 'firebase/auth';
 import { db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext'; // Import useCart to use clearCart function
+import { toast, ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
+import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
 
 function CartPage() {
   const [cartItems, setCartItems] = useState([]);
@@ -71,8 +73,13 @@ function CartPage() {
         const total = filteredItems.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
         setCartItems(filteredItems);
         setTotalAmount(total);
+
+        // Show toast notification for successful removal
+        toast.success('Item removed from cart successfully');
       } catch (error) {
         console.error('Error removing item from cart:', error);
+        // Show toast notification for error
+        toast.error('Error removing item from cart');
       }
     }
   };
@@ -100,10 +107,14 @@ function CartPage() {
       // Clear the cart
       await clearCart();
 
-      // Navigate to the Student Dashboard
-      navigate('/dashboard');
+      // Show success toast and delay redirection
+      toast.success('Purchase successful! Redirecting to dashboard...');
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 7000); // Delay redirection by 7 seconds
     } catch (error) {
       console.error('Error enrolling courses:', error);
+      toast.error('Error completing purchase');
     }
   };
 
@@ -156,6 +167,7 @@ function CartPage() {
       ) : (
         <p className="text-center">Your cart is empty.</p>
       )}
+      <ToastContainer />
     </div>
   );
 }

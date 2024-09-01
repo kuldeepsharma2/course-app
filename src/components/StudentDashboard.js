@@ -47,7 +47,7 @@ function StudentDashboardPage() {
               <div className="flex-1 sm:ml-4">
                 <h2 className="text-xl font-semibold mb-2">{course.title}</h2>
                 <p className="mb-2">{course.description}</p>
-                <p className="text-gray-500 mb-2">Price: ${course.price}</p>
+                {/* <p className="text-gray-500 mb-2">Price: ${course.price}</p> */}
               </div>
             </div>
           ))}
