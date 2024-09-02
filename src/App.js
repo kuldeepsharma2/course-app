@@ -12,6 +12,8 @@ import Header from './components/Header';
 import Footer from './components/Footer'; // Import Footer
 import PrivateRoute from './components/PrivateRoute';
 import { CartProvider } from './contexts/CartContext';
+import { ToastContainer } from 'react-toastify'; // Import ToastContainer
+import 'react-toastify/dist/ReactToastify.css'; // Import styles
 
 function App() {
   return (
@@ -37,6 +39,7 @@ function App() {
           </main>
           <Footer />
         </div>
+        <ToastContainer /> {/* Add ToastContainer */}
       </CartProvider>
     </Router>
   );
