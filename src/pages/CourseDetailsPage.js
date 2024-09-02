@@ -74,7 +74,7 @@ function CourseDetailPage() {
         />
       )}
       <div className="text-lg mb-4 space-y-2">
-        <p className="description"><strong>Description:</strong> {course.description}</p>
+        <h3><strong>Description:</strong></h3> <p className="description">{course.description}</p>
         <p><strong>Instructor:</strong> {course.instructor}</p>
         <p><strong>Price:</strong> ${course.price}</p>
         <p><strong>Duration:</strong> {new Date(course.duration).toLocaleString()}</p>
@@ -86,9 +86,9 @@ function CourseDetailPage() {
 
       {/* Syllabus as an expandable item */}
       <details className="mt-4">
-        <summary className="cursor-pointer description text-blue-500 font-semibold">View Syllabus</summary>
+        <summary className="cursor-pointer text-blue-500 font-semibold">View Syllabus</summary>
         <div className="mt-2">
-          <p>{course.syllabus}</p>
+          <p className='description'>{course.syllabus}</p>
         </div>
       </details>
 
